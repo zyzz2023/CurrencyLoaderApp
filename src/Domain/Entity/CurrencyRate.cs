@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Domain.Entities
 {
     public sealed class CurrencyRate : IEquatable<CurrencyRate>
     {
-        public string CurrencyCode { get; private set; }
-        public string CurrencyName { get; private set; }
-        public int Nominal { get; private set; }
-        public decimal Value { get; private set; }
+        public string CurrencyCode { get; set; }    
+        public DateTime Date { get; set; }          
+        public string CurrencyName { get; set; }
+        public int Nominal { get; set; } = 1;
+        public decimal Value { get; set; }
 
-        public string RequestDate { get; private set; } = DateTime.UtcNow.ToShortDateString();
-
-        public static CurrencyRate Create(string currencyCode, string currencyName, int nominal, decimal value)
+        public static CurrencyRate Create(string code, string name, int nominal, decimal value, DateTime date)
         {
             return new CurrencyRate
             {
-                CurrencyCode = currencyCode,
-                CurrencyName = currencyName,
+                CurrencyCode = code,
+                CurrencyName = name,
                 Nominal = nominal,
-                Value = value
+                Value = value,
+                Date = date
             };
         }
 
@@ -30,8 +31,9 @@ namespace Domain.Entities
         {
             if (other is null) return false;
 
-            return (CurrencyCode == other.CurrencyCode) && (RequestDate == other.RequestDate)
-                && (Value == other.Value);
+            var dateOnly = DateTime.SpecifyKind(other.Date.Date, DateTimeKind.Utc);
+
+            return CurrencyCode == other.CurrencyCode && Date.Date == other.Date.Date;
         }
     }
 }

@@ -4,12 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
-namespace Domain.Repositories
+
+namespace Domain.Interfaces
 {
     public interface ICurrencyRepository
     {
-        Task<IEnumerable<CurrencyRate>> GetAllRatesAsync();
-        Task<CurrencyRate> GetRateByCodeAsync(int currencyCode);
-
+        Task AddRatesAsync(IEnumerable<CurrencyRate> currencyRates);
+        Task<CurrencyRate?> GetByCodeAndDateAsync(string currencyCode, DateTime date);
+        Task<CurrencyRate> GetByCodeAsync(string code);
+        Task UpsertAsync(CurrencyRate rate);
+        Task UpsertRangeAsync(IEnumerable<CurrencyRate> rates);
+        Task<IEnumerable<CurrencyRate>> GetPagedAsync(int pageNumber, int pageSize, string? currencyCode, DateTime? onDate);
+        Task<CurrencyRate?> GetLatestAsync(string currencyCode);
+        //Task<CurrencyRate> GetQRCodeAsync(string code);
     }
 }
