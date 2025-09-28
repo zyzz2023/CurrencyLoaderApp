@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class CurrencyRate : IEquatable<CurrencyRate>
+    public sealed class CurrencyRate : IEquatable<CurrencyRate>
     {
-        public string CurrencyCode { get; set; }
-        public string CurrencyName { get; set; }
-        public int Nominal { get; set; }
-        public decimal Value { get; set; }
+        public string CurrencyCode { get; private set; }
+        public string CurrencyName { get; private set; }
+        public int Nominal { get; private set; }
+        public decimal Value { get; private set; }
 
-        public string RequestDate { get; set; } = DateTime.UtcNow.ToShortDateString();
+        public string RequestDate { get; private set; } = DateTime.UtcNow.ToShortDateString();
 
-        public CurrencyRate Create(string currencyCode, string currencyName, int nominal, decimal value)
+        public static CurrencyRate Create(string currencyCode, string currencyName, int nominal, decimal value)
         {
             return new CurrencyRate
             {

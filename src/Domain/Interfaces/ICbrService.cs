@@ -9,6 +9,6 @@ namespace Domain.Interfaces
 {
     public interface ICbrService
     {
-        Task<IEnumerable<CurrencyRate>> GetAllRatesAsync();
+        Task<IEnumerable<CurrencyRate>> GetAllRatesByDaysAsync(int days);
     }
 }
