@@ -10,11 +10,6 @@ namespace Domain.Interfaces
 {
     public interface ICbrService
     {
-        /// <summary>
-        /// Getting currency exchange rates for n number of days starting from the current day
-        /// </summary>
-        /// <param name="days"></param>
-        /// <returns></returns>
         Task<bool> GetAllRatesByDaysAsync(int days);
     }
 }

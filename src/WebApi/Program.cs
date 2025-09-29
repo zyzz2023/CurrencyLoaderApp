@@ -17,8 +17,6 @@ builder.Configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var jwtKey = builder.Configuration["JwtSettings:Key"];
 
-Console.WriteLine($"DEBUG ========================= {jwtKey}");
-
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
