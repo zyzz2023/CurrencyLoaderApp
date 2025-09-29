@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 namespace WebApi.Controllers
 {
@@ -15,6 +16,13 @@ namespace WebApi.Controllers
             { "admin", "admin123" },
             { "user", "user123" }
         };
+        
+        private readonly IConfiguration _configuration;
+
+        public AuthController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         [HttpPost("token")]
         public IActionResult GetToken([FromBody] LoginRequest request)
@@ -36,8 +44,8 @@ namespace WebApi.Controllers
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.Role, username == "admin" ? "Admin" : "User")
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-super-secure-secret-key-32-chars-min"));
+            var jwtKey = _configuration["JwtSettings:Key"];
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

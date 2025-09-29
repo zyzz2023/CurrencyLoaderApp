@@ -29,14 +29,26 @@ namespace WebApi.Controllers
             [FromQuery] string? currencyCode = null,
             [FromQuery] string? onDate = null)
         {
+            if (pageNumber < 1)
+                return BadRequest(new { error = "Номер страницы должен быть больше 0" });
+
+            if (pageSize < 1 || pageSize > 100)
+                return BadRequest(new { error = "Размер страницы должен быть от 1 до 100" });
+
+            if (!string.IsNullOrEmpty(currencyCode) && currencyCode.Length > 5)
+                return BadRequest(new { error = "Код валюты не может быть длиннее 5 символов" });
+
             DateTime? parsedDate = null;
+            if (!string.IsNullOrEmpty(onDate))
+            {
+                if (!DateTime.TryParse(onDate, out var tempDate))
+                    return BadRequest(new { error = "Неверный формат даты" });
+
+                parsedDate = DateTime.SpecifyKind(tempDate.Date, DateTimeKind.Utc);
+            }
 
             try
             {
-                if (!string.IsNullOrEmpty(onDate) && DateTime.TryParse(onDate, out var tempDate))
-                {
-                    parsedDate = DateTime.SpecifyKind(tempDate.Date, DateTimeKind.Utc);
-                }
                 var result = await _currencyService.GetExchangeRatesAsync(
                     pageNumber, pageSize, currencyCode, parsedDate);
 
@@ -53,21 +65,14 @@ namespace WebApi.Controllers
         public async Task<ActionResult<CurrencyRateDto>> GetLatestCurrencyRateByCode([FromRoute] string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-            {
                 return BadRequest(new { error = "Код валюты не может быть пустым" });
-            }
+
+            if (code.Length > 5)
+                return BadRequest(new { error = "Код валюты не может быть длиннее 5 символов" });
 
             try
             {
                 var result = await _currencyService.GetRateByCodeAsync(code);
-
-                if (result == null)
-                {
-                    return NotFound(new
-                    {
-                        error = $"Курс для валюты {code} не найден"
-                    });
-                }
 
                 return Ok(result);
             }

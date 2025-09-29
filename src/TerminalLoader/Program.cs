@@ -38,7 +38,9 @@ namespace CurrencyLoaderApp.TerminalLoader
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddUserSecrets<Program>();
                     config.AddEnvironmentVariables();
+                    var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
                 })
                 .ConfigureServices((context, services) =>
                 {

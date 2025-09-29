@@ -5,10 +5,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>917cf079-7141-42e4-aea9-99f8c17b24bf</UserSecretsId>
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Application\Application.csproj" />
+		<ProjectReference Include="..\Application\Application.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 
