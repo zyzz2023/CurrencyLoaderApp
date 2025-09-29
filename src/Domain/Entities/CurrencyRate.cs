@@ -23,7 +23,7 @@ namespace Domain.Entities
                 CurrencyName = name,
                 Nominal = nominal,
                 Value = value,
-                Date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc)
+                Date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc) // для избежания ошибок с базой данных
             };
         }
 

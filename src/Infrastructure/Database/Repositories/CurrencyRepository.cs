@@ -34,14 +34,10 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<CurrencyRate> GetByCodeAsync(string code)
         {
             var today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
-
+            
             return await _context.CurrencyRates
                 .FirstOrDefaultAsync(cr => cr.CurrencyCode == code && cr.Date.Date == today);
         }
-        //public async Task<CurrencyRate> GetQRCodeAsync(string code)
-        //{
-
-        //}
         public async Task UpsertAsync(CurrencyRate rate)
         {
             var existing = await GetByCodeAndDateAsync(rate.CurrencyCode, rate.Date);

@@ -8,7 +8,6 @@ namespace Domain.Interfaces
 {
     public interface IQrCodeService
     {
-        
         byte[] GenerateQrCode(string url, int pixelsPerModule = 20);
     }
 }
