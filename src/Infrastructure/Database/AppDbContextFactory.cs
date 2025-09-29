@@ -9,7 +9,6 @@ namespace Infrastructure.Persistence
     {
         public AppDbContext CreateDbContext(string[] args)
         {
-            // Путь к папке с appsettings.json
             var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "TerminalLoader");
 
             var configuration = new ConfigurationBuilder()

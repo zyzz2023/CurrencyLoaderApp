@@ -7,6 +7,7 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -25,14 +26,14 @@ namespace Infrastructure.Persistence.Repositories
         }
         public async Task<CurrencyRate?> GetByCodeAndDateAsync(string currencyCode, DateTime date)
         {
-            var dateOnly = date.Date;
+            var dateOnly = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
 
             return await _context.CurrencyRates
                 .FirstOrDefaultAsync(cr => cr.CurrencyCode == currencyCode && cr.Date.Date == dateOnly);
         }
         public async Task<CurrencyRate> GetByCodeAsync(string code)
         {
-            var today = DateTime.Today;
+            var today = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
             return await _context.CurrencyRates
                 .FirstOrDefaultAsync(cr => cr.CurrencyCode == code && cr.Date.Date == today);
@@ -86,14 +87,33 @@ namespace Infrastructure.Persistence.Repositories
                 query = query.Where(cr => cr.CurrencyCode == currencyCode);
 
             if (onDate.HasValue)
-                query = query.Where(cr => cr.Date == onDate.Value);
+            {
+                var utcDate = DateTime.SpecifyKind(onDate.Value.Date, DateTimeKind.Utc);
+                query = query.Where(cr => cr.Date.Date == utcDate.Date);
+            }
 
             return await query
                 .OrderBy(cr => cr.CurrencyCode)
                 .ThenByDescending(cr => cr.Date)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
+        }
+        public async Task<int> GetCountAsync(string? currencyCode, DateTime? onDate)
+        {
+            var query = _context.CurrencyRates.AsQueryable();
+
+            if (!string.IsNullOrEmpty(currencyCode))
+                query = query.Where(cr => cr.CurrencyCode == currencyCode);
+
+            if (onDate.HasValue)
+            {
+                var dateOnly = onDate.Value.Date;
+                query = query.Where(cr => cr.Date.Date == dateOnly);
+            }
+
+            return await query.CountAsync();
         }
         public async Task<CurrencyRate?> GetLatestAsync(string currencyCode)
         {

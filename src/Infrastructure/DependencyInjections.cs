@@ -27,6 +27,7 @@ namespace Infrastructure
 
             services.AddScoped<ICurrencyRepository, CurrencyRateRepository>();
             services.AddScoped<ICbrService, CbrService>();
+            services.AddScoped<IQrCodeService, QrCodeService>();
 
             return services;
         }

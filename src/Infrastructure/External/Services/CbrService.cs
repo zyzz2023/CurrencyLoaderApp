@@ -37,7 +37,7 @@ namespace Infrastructure.External.Services
             var startDate = DateTime.UtcNow;
             var endDate = startDate.AddDays(-(days - 1));
 
-            _logger.LogInformation("Начало загрузки курсов за {Days} дней", days);
+            _logger.LogInformation($"Начало загрузки курсов за {days} дней");
 
             for (var date = startDate; date >= endDate; date = date.AddDays(-1))
             {
@@ -55,7 +55,6 @@ namespace Infrastructure.External.Services
             try
             {
                 await _repository.UpsertRangeAsync(allRates);
-                //_logger.LogInformation($"Успешно сохранено {allRates.Count} курсов в БД");
                 return true;
             }
             catch (Exception ex)
@@ -63,8 +62,6 @@ namespace Infrastructure.External.Services
                 _logger.LogError(ex, "Ошибка сохранения курсов в БД");
                 return false;
             }
-
-            // return allRates; // Потом это будет грузиться в базу данных
         }
         private async Task<IEnumerable<CurrencyRate>> GetRatesForDateAsync(DateTime date)
         {
@@ -82,10 +79,6 @@ namespace Infrastructure.External.Services
             {
                 try
                 {
-                    //var charCode = element.SelectSingleNode("CharCode")?.InnerText.Trim();
-                    //var name = element.SelectSingleNode("Name")?.InnerText.Trim();
-                    //var nominal = int.Parse(element.SelectSingleNode("Nominal")?.InnerText ?? "1");
-                    //var valueStr = element.SelectSingleNode("Value")?.InnerText;
                     var charCode = element.SelectSingleNode("VchCode")?.InnerText.Trim()!;
                     var name = element.SelectSingleNode("Vname")?.InnerText.Trim()!;
                     var nominal = int.Parse(element.SelectSingleNode("Vnom")?.Value ?? "1");
@@ -96,14 +89,16 @@ namespace Infrastructure.External.Services
                     {
                         continue;
                     }
-                    
+
+                    var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+
                     rates.Add(CurrencyRate.Create
                     (
                         charCode,
                         name ?? charCode,
                         nominal,
                         value,
-                        date
+                        utcDate
                     ));
                 }
                 catch (Exception ex)
@@ -113,18 +108,6 @@ namespace Infrastructure.External.Services
             }
 
             return rates;
-        }
-        private CurrencyRate ParseCurrencyRate(XElement element, DateTime date)
-        {
-            var charCode = element.Element("VchCode")?.Value;
-            var name = element.Element("Vname")?.Value;
-            var nominal = int.Parse(element.Element("Vnom")?.Value ?? "1");
-            var value = decimal.Parse(element.Element("Vcurs")?.Value ?? "0", CultureInfo.InvariantCulture);
-
-            if (string.IsNullOrEmpty(charCode) || value <= 0)
-                return null;
-
-            return CurrencyRate.Create(charCode, name, nominal, value, date);
         }
     }
 }

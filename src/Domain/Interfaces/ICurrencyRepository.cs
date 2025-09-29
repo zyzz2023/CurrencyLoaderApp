@@ -15,7 +15,7 @@ namespace Domain.Interfaces
         Task UpsertAsync(CurrencyRate rate);
         Task UpsertRangeAsync(IEnumerable<CurrencyRate> rates);
         Task<IEnumerable<CurrencyRate>> GetPagedAsync(int pageNumber, int pageSize, string? currencyCode, DateTime? onDate);
+        Task<int> GetCountAsync(string? currencyCode, DateTime? onDate);
         Task<CurrencyRate?> GetLatestAsync(string currencyCode);
-        //Task<CurrencyRate> GetQRCodeAsync(string code);
     }
 }
